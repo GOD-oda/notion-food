@@ -21,6 +21,7 @@ Using ts-node
 $ npx ts-node src/app.ts
 ```
 
+TODO: Doesn't work
 Using node (after build)
 ```shell
 $ node dist/app.js
