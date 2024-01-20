@@ -3,7 +3,25 @@ import parse from "node-html-parser";
 import {env} from "./env";
 
 async function main() {
-  const url = process.argv[2] || ''
+  const types = {
+    'SUSHI': env.SUSHI_DATABASE_ID,
+    'YAKINIKU': env.YAKINIKU_DATABASE_ID
+  }
+
+  const type = process.argv[2] || ''
+  const typeKeys = Object.keys(types)
+  if (type.length < 1) {
+    throw new Error(`Please specify the type. The types that can be specified are as follows. [ ${typeKeys.join(' ')} ]`)
+  }
+
+  if (!typeKeys.includes(type)) {
+    throw new Error(`The types that can be specified are as follows. [ ${typeKeys.join(' ')} ]`)
+  }
+
+  // @ts-ignore
+  const databaseId = types[type]
+
+  const url = process.argv[3] || ''
   if (url.length < 1) {
     throw new Error('URLを指定してください')
   }
@@ -21,13 +39,9 @@ async function main() {
     auth: process.env.NOTION_TOKEN,
   })
 
-  if (env.DATABASE_ID === '') {
-    throw new Error('DATABASE_ID is not defined')
-  }
-
   await notion.pages.create({
     parent: {
-      database_id: env.DATABASE_ID
+      database_id: databaseId
     },
     properties: {
       Name: {

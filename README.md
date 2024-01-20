@@ -18,7 +18,7 @@ $ npx tsc
 ## Run
 Using ts-node
 ```shell
-$ npx ts-node src/app.ts
+$ npx ts-node src/app.ts <TYPE> <URL>
 ```
 
 TODO: Doesn't work
