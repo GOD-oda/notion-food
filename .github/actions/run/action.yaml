@@ -1,0 +1,12 @@
+inputs:
+  type
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run
+      env:
+        NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        DATABASE_ID: ${{ secrets.DATABASE_ID }}
+      run: |
+        node dist/app.js ${{ github.event.client_payload.type }} ${{ github.event.client_payload.url }}
