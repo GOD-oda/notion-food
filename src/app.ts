@@ -1,25 +1,13 @@
-import {Client} from "@notionhq/client";
 import parse from "node-html-parser";
 import {env} from "./env";
+import {notion} from "./client";
+import {Restaurant, RestaurantType, restaurantTypes} from "./restaurant";
 
 async function main() {
-  const types = {
-    'SUSHI': env.SUSHI_DATABASE_ID,
-    'YAKINIKU': env.YAKINIKU_DATABASE_ID
-  }
-
   const type = process.argv[2] || ''
-  const typeKeys = Object.keys(types)
   if (type.length < 1) {
-    throw new Error(`Please specify the type. The types that can be specified are as follows. [ ${typeKeys.join(' ')} ]`)
+    throw new Error(`Please specify the type. The types that can be specified are as follows. [ ${restaurantTypes.join(' ')} ]`)
   }
-
-  if (!typeKeys.includes(type)) {
-    throw new Error(`The types that can be specified are as follows. [ ${typeKeys.join(' ')} ]`)
-  }
-
-  // @ts-ignore
-  const databaseId = types[type]
 
   const url = process.argv[3] || ''
   if (url.length < 1) {
@@ -33,29 +21,26 @@ async function main() {
   if (!name) {
     throw new Error('店名が取得できませんでした')
   }
-  const address = root.querySelector('.rstinfo-table__address span')?.text?.trim() || ''
-
-  const notion = new Client({
-    auth: process.env.NOTION_TOKEN,
-  })
+  const prefecture = root.querySelector('.rstinfo-table__address span')?.text?.trim() || ''
+  const restaurant = Restaurant.from(name, prefecture, url, type as RestaurantType)
 
   await notion.pages.create({
     parent: {
-      database_id: databaseId
+      database_id: env.DATABASE_ID
     },
     properties: {
       Name: {
         title: [
           {
             text: {
-              content: name
+              content: restaurant.NAME
             }
           }
         ]
       },
       Prefecture: {
         select: {
-          name: address
+          name: restaurant.PREFECTURE
         }
       },
       // @ts-ignore
@@ -63,14 +48,19 @@ async function main() {
         rich_text: [
           {
             text: {
-              content: url,
+              content: restaurant.LINK,
               link: {
-                url: url
+                url: restaurant.LINK
               }
             },
           }
         ]
-      }
+      },
+      Type: {
+        select: {
+          name: restaurant.TYPE
+        }
+      },
     },
   })
 }
