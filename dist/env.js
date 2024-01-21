@@ -4,5 +4,6 @@ exports.env = void 0;
 require("dotenv/config");
 exports.env = {
     NOTION_TOKEN: process.env.NOTION_TOKEN || '',
-    DATABASE_ID: process.env.DATABASE_ID || '',
+    YAKINIKU_DATABASE_ID: process.env.YAKINIKU_DATABASE_ID || '',
+    SUSHI_DATABASE_ID: process.env.SUSHI_DATABASE_ID || ''
 };
