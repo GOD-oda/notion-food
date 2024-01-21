@@ -31,7 +31,6 @@ jobs:
       - name: Run
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          YAKINIKU_DATABASE_ID: ${{ secrets.YAKINIKU_DATABASE_ID }}
-          SUSHI_DATABASE_ID: ${{ secrets.SUSHI_DATABASE_ID }}
+          DATABASE_ID: ${{ secrets.DATABASE_ID }}
         run: |
           node dist/app.js ${{ github.event.inputs.type }} ${{ github.event.inputs.url }} 
