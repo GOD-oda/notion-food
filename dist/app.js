@@ -12,26 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@notionhq/client");
 const node_html_parser_1 = __importDefault(require("node-html-parser"));
 const env_1 = require("./env");
+const client_1 = require("./client");
+const restaurant_1 = require("./restaurant");
 function main() {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
-        const types = {
-            'SUSHI': env_1.env.SUSHI_DATABASE_ID,
-            'YAKINIKU': env_1.env.YAKINIKU_DATABASE_ID
-        };
         const type = process.argv[2] || '';
-        const typeKeys = Object.keys(types);
         if (type.length < 1) {
-            throw new Error(`Please specify the type. The types that can be specified are as follows. [ ${typeKeys.join(' ')} ]`);
+            throw new Error(`Please specify the type. The types that can be specified are as follows. [ ${restaurant_1.restaurantTypes.join(' ')} ]`);
         }
-        if (!typeKeys.includes(type)) {
-            throw new Error(`The types that can be specified are as follows. [ ${typeKeys.join(' ')} ]`);
-        }
-        // @ts-ignore
-        const databaseId = types[type];
         const url = process.argv[3] || '';
         if (url.length < 1) {
             throw new Error('URLを指定してください');
@@ -43,27 +34,25 @@ function main() {
         if (!name) {
             throw new Error('店名が取得できませんでした');
         }
-        const address = ((_d = (_c = root.querySelector('.rstinfo-table__address span')) === null || _c === void 0 ? void 0 : _c.text) === null || _d === void 0 ? void 0 : _d.trim()) || '';
-        const notion = new client_1.Client({
-            auth: process.env.NOTION_TOKEN,
-        });
-        yield notion.pages.create({
+        const prefecture = ((_d = (_c = root.querySelector('.rstinfo-table__address span')) === null || _c === void 0 ? void 0 : _c.text) === null || _d === void 0 ? void 0 : _d.trim()) || '';
+        const restaurant = restaurant_1.Restaurant.from(name, prefecture, url, type);
+        yield client_1.notion.pages.create({
             parent: {
-                database_id: databaseId
+                database_id: env_1.env.DATABASE_ID
             },
             properties: {
                 Name: {
                     title: [
                         {
                             text: {
-                                content: name
+                                content: restaurant.NAME
                             }
                         }
                     ]
                 },
                 Prefecture: {
                     select: {
-                        name: address
+                        name: restaurant.PREFECTURE
                     }
                 },
                 // @ts-ignore
@@ -71,14 +60,19 @@ function main() {
                     rich_text: [
                         {
                             text: {
-                                content: url,
+                                content: restaurant.LINK,
                                 link: {
-                                    url: url
+                                    url: restaurant.LINK
                                 }
                             },
                         }
                     ]
-                }
+                },
+                Type: {
+                    select: {
+                        name: restaurant.TYPE
+                    }
+                },
             },
         });
     });
