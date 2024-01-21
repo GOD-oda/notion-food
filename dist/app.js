@@ -18,7 +18,21 @@ const env_1 = require("./env");
 function main() {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
-        const url = process.argv[2] || '';
+        const types = {
+            'SUSHI': env_1.env.SUSHI_DATABASE_ID,
+            'YAKINIKU': env_1.env.YAKINIKU_DATABASE_ID
+        };
+        const type = process.argv[2] || '';
+        const typeKeys = Object.keys(types);
+        if (type.length < 1) {
+            throw new Error(`Please specify the type. The types that can be specified are as follows. [ ${typeKeys.join(' ')} ]`);
+        }
+        if (!typeKeys.includes(type)) {
+            throw new Error(`The types that can be specified are as follows. [ ${typeKeys.join(' ')} ]`);
+        }
+        // @ts-ignore
+        const databaseId = types[type];
+        const url = process.argv[3] || '';
         if (url.length < 1) {
             throw new Error('URLを指定してください');
         }
@@ -33,12 +47,9 @@ function main() {
         const notion = new client_1.Client({
             auth: process.env.NOTION_TOKEN,
         });
-        if (env_1.env.DATABASE_ID === '') {
-            throw new Error('DATABASE_ID is not defined');
-        }
         yield notion.pages.create({
             parent: {
-                database_id: env_1.env.DATABASE_ID
+                database_id: databaseId
             },
             properties: {
                 Name: {
