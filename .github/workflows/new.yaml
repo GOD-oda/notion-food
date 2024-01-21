@@ -1,4 +1,7 @@
 on:
+  push:
+    branches:
+      - "**"
   workflow_dispatch:
     inputs:
       url:
@@ -29,4 +32,4 @@ jobs:
           YAKINIKU_DATABASE_ID: ${{ secrets.YAKINIKU_DATABASE_ID }}
           SUSHI_DATABASE_ID: ${{ secrets.SUSHI_DATABASE_ID }}
         run: |
-          node dist/app.js ${{ github.event.inputs.type }} ${{ github.event.inputs.url }}
+          node dist/app.js SUSHI https://tabelog.com/tokyo/A1301/A130101/13270948/ 
