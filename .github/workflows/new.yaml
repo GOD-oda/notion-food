@@ -7,6 +7,7 @@ on:
       type:
         description: 'Type of restaurant'
         required: true
+        type: choice
         options:
           - 'SUSHI'
           - 'YAKINIKU'
