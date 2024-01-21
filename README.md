@@ -20,9 +20,3 @@ Using ts-node
 ```shell
 $ npx ts-node src/app.ts <TYPE> <URL>
 ```
-
-TODO: Doesn't work
-Using node (after build)
-```shell
-$ node dist/app.js
-```
