@@ -37,7 +37,7 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           DATABASE_ID: ${{ secrets.DATABASE_ID }}
         run: |
-          node dist/app.js ${{ github.event.inputs.type }} ${{ github.event.inputs.url }} 
+#          node dist/app.js ${{ github.event.inputs.type }} ${{ github.event.inputs.url }}
 
   run_in_repository_dispatch:
     runs-on: ubuntu-latest
