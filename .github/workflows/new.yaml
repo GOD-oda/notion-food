@@ -43,6 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'repository_dispatch' && github.event.action == "new" && ${{ github.event.client_payload.passed }}
     steps:
+      - run: |
+            echo "Running in repository_dispatch"
+            echo "Type: ${{ github.event.client_payload.type }}"
+            echo "URL: ${{ github.event.client_payload.url }}"
       - name: Checkout
         uses: actions/checkout@v4
 
