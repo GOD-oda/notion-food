@@ -19,7 +19,8 @@ export const Restaurant = {
 export const restaurantTypes = [
   'SUSHI' ,
   'YAKINIKU',
-  'OKONOMIYAKI'
+  'OKONOMIYAKI',
+  'TONKATSU',
 ] as const
 export type RestaurantType = typeof restaurantTypes[number]
 

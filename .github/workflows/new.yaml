@@ -15,6 +15,7 @@ on:
           - 'SUSHI'
           - 'YAKINIKU'
           - 'OKONOMIYAKI'
+          - 'TONKATSU'
 
 jobs:
   run_in_workflow_dispatch:
