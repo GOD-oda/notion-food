@@ -9,6 +9,7 @@ async function main() {
     throw new Error(`Please specify the type. The types that can be specified are as follows. [ ${restaurantTypes.join(' ')} ]`)
   }
 
+  // NOTE: parse可能なURLは食べログのみ
   const url = process.argv[3] || ''
   if (url.length < 1) {
     throw new Error('URLを指定してください')
