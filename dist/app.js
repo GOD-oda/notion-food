@@ -17,12 +17,13 @@ const env_1 = require("./env");
 const client_1 = require("./client");
 const restaurant_1 = require("./restaurant");
 function main() {
-    var _a, _b, _c, _d;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const type = process.argv[2] || '';
         if (type.length < 1) {
             throw new Error(`Please specify the type. The types that can be specified are as follows. [ ${restaurant_1.restaurantTypes.join(' ')} ]`);
         }
+        // NOTE: parse可能なURLは食べログのみ
         const url = process.argv[3] || '';
         if (url.length < 1) {
             throw new Error('URLを指定してください');
@@ -30,12 +31,15 @@ function main() {
         const response = yield fetch(url);
         const body = yield response.text();
         const root = (0, node_html_parser_1.default)(body);
+        // レストラン名
         const name = (_b = (_a = root.querySelector('h2 span')) === null || _a === void 0 ? void 0 : _a.text) === null || _b === void 0 ? void 0 : _b.trim();
         if (!name) {
             throw new Error('店名が取得できませんでした');
         }
-        const prefecture = ((_d = (_c = root.querySelector('.rstinfo-table__address span')) === null || _c === void 0 ? void 0 : _c.text) === null || _d === void 0 ? void 0 : _d.trim()) || '';
-        const restaurant = restaurant_1.Restaurant.from(name, prefecture, url, type);
+        // エリア
+        const spans = Array.from(root.querySelectorAll('.rstinfo-table__address span a'));
+        const areaTexts = spans.map(span => span.text.trim());
+        const restaurant = new restaurant_1.Restaurant(name, areaTexts, url, type);
         yield client_1.notion.pages.create({
             parent: {
                 database_id: env_1.env.DATABASE_ID
@@ -50,10 +54,8 @@ function main() {
                         }
                     ]
                 },
-                Prefecture: {
-                    select: {
-                        name: restaurant.PREFECTURE
-                    }
+                Area: {
+                    multi_select: restaurant.toMultiSelectArea()
                 },
                 // @ts-ignore
                 Link: {
