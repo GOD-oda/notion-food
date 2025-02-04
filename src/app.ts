@@ -18,12 +18,18 @@ async function main() {
   const response = await fetch(url);
   const body = await response.text()
   const root = parse(body)
+
+  // レストラン名
   const name = root.querySelector('h2 span')?.text?.trim()
   if (!name) {
     throw new Error('店名が取得できませんでした')
   }
-  const prefecture = root.querySelector('.rstinfo-table__address span')?.text?.trim() || ''
-  const restaurant = Restaurant.from(name, prefecture, url, type as RestaurantType)
+
+  // エリア
+  const spans = Array.from(root.querySelectorAll('.rstinfo-table__address span a'));
+  const areaTexts = spans.map(span => span.text.trim());
+
+  const restaurant = new Restaurant(name, areaTexts, url, type as RestaurantType)
 
   await notion.pages.create({
     parent: {
@@ -39,10 +45,8 @@ async function main() {
           }
         ]
       },
-      Prefecture: {
-        select: {
-          name: restaurant.PREFECTURE
-        }
+      Area: {
+        multi_select: restaurant.toMultiSelectArea()
       },
       // @ts-ignore
       Link: {
